@@ -3,7 +3,10 @@ const http = require("http");
 const fs = require("fs");
 
 const app = express();
-app.listen(3000);
+
+app.get("/", (req, res) => {
+    res.status(200).send("hi kitty >.<");
+});
 
 app.get("/text/:text_id", (req, res) => {
 
@@ -120,3 +123,5 @@ app.get("/track/:track_id", (req, res) => {
         console.log("Error: " + err.message);
     });
 });
+
+module.exports = app;
