@@ -6,6 +6,7 @@ const audioDir = "../assets/audios";
 const imageDir = "../assets/images";
 
 const app = express();
+app.set('view engine', 'ejs');
 
 app.get("/", (req, res) => {
     res.status(200).send("hi kiyyu >.<");
@@ -48,7 +49,7 @@ app.get("/images/:trackId", async (req, res) => {
 });
 
 
-app.get("/player/:trackId", async (req, res) => {
+app.get("/audios/:trackId", async (req, res) => {
 
     const trackId = req.params.trackId;
     const filePath = `${audioDir}/${trackId}.mp3`;
@@ -63,25 +64,41 @@ app.get("/player/:trackId", async (req, res) => {
         var partialend = parts[1];
 
         var start = parseInt(partialstart, 10);
-        var end = partialend ? parseInt(partialend, 10) : total-1;
-        var chunksize = (end-start)+1;
-        var readStream = fs.createReadStream(filePath, {start: start, end: end});
+        var end = partialend ? parseInt(partialend, 10) : total - 1;
+        var chunksize = (end - start) + 1;
+        var readStream = fs.createReadStream(filePath, { start: start, end: end });
         res.writeHead(206, {
             'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
             'Accept-Ranges': 'bytes', 'Content-Length': chunksize,
             'Content-Type': 'audio/mpeg'
         });
         readStream.pipe(res);
-        console.log(`total: ${total}, range: ${req.headers.range}, chunksize: ${chunksize}, end: ${end},  start: ${start}`); 
+        console.log(`total: ${total}, range: ${req.headers.range}, chunksize: ${chunksize}, end: ${end},  start: ${start}`);
     } else {
         res.writeHead(200, { 'Content-Length': total, 'Content-Type': 'audio/mpeg' });
         fs.createReadStream(filePath).pipe(res);
         console.log(`total: ${total}, res: ${res}`);
-     }
-
-
+    }
 });
 
+
+app.get("/player/:trackId", async (req, res) => {
+
+    const trackId = req.params.trackId;
+
+    let audioFile;
+    let imageFile;
+    try {
+        audioFile = `http://localhost:4242/audios/${trackId}`;
+        imageFile = `http://localhost:4242/images/${trackId}`; 
+    } catch (err) {
+        console.log("error: " + err.message);
+        return res.status(400).send(err);
+    }
+
+    res.render('kitty', { audio: audioFile, image: imageFile });
+
+});
 
 
 module.exports = app;
