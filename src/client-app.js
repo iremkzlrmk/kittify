@@ -58,8 +58,8 @@ app.get("/image/:trackId", (req, res) => {
 
         resp.on('end', () => {
             const buffer = Buffer.from(imageData, "binary");
-            fs.writeFileSync('image.jpg', buffer);
-            console.log('image saved.');
+            // fs.writeFileSync('image.jpg', buffer);
+            // console.log('image saved.');
             res.set('Content-Type', 'image/jpeg');
             res.send(buffer);
         });
@@ -90,8 +90,8 @@ app.get("/audio/:trackId", (req, res) => {
 
         resp.on('end', () => {
             const buffer = Buffer.from(trackData, "binary");
-            fs.writeFileSync('audio.mp3', buffer);
-            console.log('track saved.');
+            // fs.writeFileSync('audio.mp3', buffer);
+            // console.log('track saved.');
             res.set('Content-Type', 'audio/mpeg');
             res.send(buffer);
         });
@@ -107,6 +107,11 @@ app.get("/play/:trackId", (req, res) => {
     let trackId = req.params.trackId;
 
     http.get(`${serverUrl}/player/${trackId}`, (resp) => {
+
+        if (resp.statusCode == 400){
+            console.log("no such track exists"); 
+            return res.status(400).send("no such track exists");
+        }
         
         let data = '';
         resp.on('data', (chunk) => {
@@ -119,7 +124,7 @@ app.get("/play/:trackId", (req, res) => {
 
     }).on("error", (err) => {
         console.log("Error: " + err.message);
-        res.send("no such song exists :\"")
+        res.send("no such track exists :\"")
     });
 });
 

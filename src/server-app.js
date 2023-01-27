@@ -52,33 +52,51 @@ app.get("/images/:trackId", async (req, res) => {
 app.get("/audios/:trackId", async (req, res) => {
 
     const trackId = req.params.trackId;
-    const filePath = `${audioDir}/${trackId}.mp3`;
+
+    let audioPath;
+    try {
+        audioPath = `${audioDir}/${trackId}.mp3`;
+        var stat = fs.statSync(audioPath);
+        var total = stat.size;
+    } catch (err) {
+        console.log("error: " + err.message);
+        return res.status(400).send(err);
+    }
 
     //media player
-    var stat = fs.statSync(filePath);
-    var total = stat.size;
-    if (req.headers.range) {
-        var range = req.headers.range;
-        var parts = range.replace(/bytes=/, "").split("-");
-        var partialstart = parts[0];
-        var partialend = parts[1];
 
-        var start = parseInt(partialstart, 10);
-        var end = partialend ? parseInt(partialend, 10) : total - 1;
-        var chunksize = (end - start) + 1;
-        var readStream = fs.createReadStream(filePath, { start: start, end: end });
-        res.writeHead(206, {
-            'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
-            'Accept-Ranges': 'bytes', 'Content-Length': chunksize,
-            'Content-Type': 'audio/mpeg'
-        });
-        readStream.pipe(res);
-        console.log(`total: ${total}, range: ${req.headers.range}, chunksize: ${chunksize}, end: ${end},  start: ${start}`);
-    } else {
-        res.writeHead(200, { 'Content-Length': total, 'Content-Type': 'audio/mpeg' });
-        fs.createReadStream(filePath).pipe(res);
-        console.log(`total: ${total}, res: ${res}`);
-    }
+    // var stat = fs.statSync(audioPath);
+    // var total = stat.size;
+    // if (req.headers.range) {
+    //     var range = req.headers.range;
+    //     var parts = range.replace(/bytes=/, "").split("-");
+    //     var partialstart = parts[0];
+    //     var partialend = parts[1];
+
+    //     var start = parseInt(partialstart, 10);
+    //     var end = partialend ? parseInt(partialend, 10) : total - 1;
+    //     var chunksize = (end - start) + 1;
+    //     var readStream = fs.createReadStream(audioPath, { start: start, end: end });
+    //     res.writeHead(206, {
+    //         'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
+    //         'Accept-Ranges': 'bytes', 'Content-Length': chunksize,
+    //         'Content-Type': 'audio/mpeg'
+    //     });
+    //     readStream.pipe(res);
+    //     console.log(`total: ${total}, range: ${req.headers.range}, chunksize: ${chunksize}, end: ${end},  start: ${start}`);
+    // } else {
+    //     res.writeHead(200, { 'Content-Length': total, 'Content-Type': 'audio/mpeg' });
+    //     fs.createReadStream(audioPath).pipe(res);
+    //     console.log(`total: ${total}, res: ${res}`);
+    // }
+
+    res.writeHead(200, {
+        'Content-Length': total,
+        'Content-Type': 'audio/mpeg'
+    });
+    
+    fs.createReadStream(audioPath).pipe(res);
+    console.log(`total: ${total}, res: ${res}`);
 });
 
 
@@ -86,17 +104,16 @@ app.get("/player/:trackId", async (req, res) => {
 
     const trackId = req.params.trackId;
 
-    let audioFile;
-    let imageFile;
-    try {
-        audioFile = `http://localhost:4242/audios/${trackId}`;
-        imageFile = `http://localhost:4242/images/${trackId}`; 
+    try{
+        imageFile = fs.readFileSync(`${imageDir}/${trackId}.jpg`);
+        audioFile = fs.readFileSync(`${audioDir}/${trackId}.mp3`);
     } catch (err) {
-        console.log("error: " + err.message);
         return res.status(400).send(err);
     }
 
-    res.render('kitty', { audio: audioFile, image: imageFile });
+    let imageUrl = `http://localhost:4242/images/${trackId}`;
+    let audioUrl = `http://localhost:4242/audios/${trackId}`;
+    return res.status(200).render('kitty', { audio: audioUrl, image: imageUrl });
 
 });
 
