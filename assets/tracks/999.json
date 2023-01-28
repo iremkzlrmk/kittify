@@ -1,0 +1,8 @@
+{
+    "id" : "999",
+    "title" : "kitty's 999th dream",
+    "album" : "kitty's dreams",
+    "artist" : "kitty",
+    "image" : null,
+    "audio" : "http://localhost:4242/audio/999"
+}

@@ -3,7 +3,6 @@
     "title" : "kitty's 666th dream",
     "album" : "kitty's dreams",
     "artist" : "kitty",
-    "duration" : 666,
-    "audio_path" : "666.mp3",
-    "image_path" : "666.jpeg"
+    "image" : "http://localhost:4242/image/666",
+    "audio" : "http://localhost:4242/audio/666"
 }

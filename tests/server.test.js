@@ -10,3 +10,22 @@ describe("Test the root path of the server", () => {
             });
     });
 });
+
+describe("Test the tracks path of the server", () => {
+    test("It should response the code 200 if the track id exists", () => {
+        return request(app)
+            .get("/tracks/666")
+            .then(response => {
+                expect(response.statusCode).toBe(200);
+            });
+    });
+
+    test("It should response the code 200 if the track id exists", () => {
+        return request(app)
+            .get("/tracks/666")
+            .then(response => {
+                expect(response.statusCode).toBe(200);
+            });
+    });
+
+});

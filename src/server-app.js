@@ -12,7 +12,7 @@ app.get("/", (req, res) => {
     res.status(200).send("hi kiyyu >.<");
 });
 
-app.get("/tracks/:trackId", async (req, res) => {
+app.get("/track/:trackId", async (req, res) => {
 
     const trackId = req.params.trackId;
 
@@ -22,7 +22,7 @@ app.get("/tracks/:trackId", async (req, res) => {
         trackMeta = JSON.parse(metaFile);
     } catch (err) {
         console.log("error: " + err.message);
-        return res.status(400).send(err);
+        return res.status(404).send(err);
     }
 
     console.log(`kittify track ${trackId} sent successfully`);
@@ -31,16 +31,26 @@ app.get("/tracks/:trackId", async (req, res) => {
 });
 
 
-app.get("/images/:trackId", async (req, res) => {
+app.get("/image/:trackId", async (req, res) => {
 
     const trackId = req.params.trackId;
 
+    let metaFile;
+    try {
+        metaFile = fs.readFileSync(`${trackDir}/${trackId}.json`);
+        trackMeta = JSON.parse(metaFile);
+    } catch (err) {
+        console.log("error1: " + err.message);
+        return res.status(404).send(err);
+    }
+
+    // let imageUrl = trackMeta.image;
     let imageFile;
     try {
         imageFile = fs.readFileSync(`${imageDir}/${trackId}.jpg`);
     } catch (err) {
-        console.log("error: " + err.message);
-        return res.status(400).send(err);
+        console.log("error2: " + err.message);
+        imageFile = fs.readFileSync(`${imageDir}/default.jpg`);
     }
 
     console.log(`kittify track image ${trackId} sent successfully`);
@@ -49,19 +59,22 @@ app.get("/images/:trackId", async (req, res) => {
 });
 
 
-app.get("/audios/:trackId", async (req, res) => {
+app.get("/audio/:trackId", async (req, res) => {
 
     const trackId = req.params.trackId;
 
-    let audioPath;
+    let metaFile;
     try {
-        audioPath = `${audioDir}/${trackId}.mp3`;
-        var stat = fs.statSync(audioPath);
-        var total = stat.size;
+        metaFile = fs.readFileSync(`${trackDir}/${trackId}.json`);
+        trackMeta = JSON.parse(metaFile);
     } catch (err) {
-        console.log("error: " + err.message);
-        return res.status(400).send(err);
+        console.log("error1: " + err.message);
+        return res.status(404).send(err);
     }
+
+    let audioUrl = `${audioDir}/${trackId}.mp3`;
+    var stat = fs.statSync(audioUrl);
+    var total = stat.size;
 
     //media player
 
@@ -95,7 +108,7 @@ app.get("/audios/:trackId", async (req, res) => {
         'Content-Type': 'audio/mpeg'
     });
     
-    fs.createReadStream(audioPath).pipe(res);
+    fs.createReadStream(audioUrl).pipe(res);
     console.log(`total: ${total}, res: ${res}`);
 });
 
@@ -108,11 +121,11 @@ app.get("/player/:trackId", async (req, res) => {
         imageFile = fs.readFileSync(`${imageDir}/${trackId}.jpg`);
         audioFile = fs.readFileSync(`${audioDir}/${trackId}.mp3`);
     } catch (err) {
-        return res.status(400).send(err);
+        return res.status(404).send(err);
     }
 
-    let imageUrl = `http://localhost:4242/images/${trackId}`;
-    let audioUrl = `http://localhost:4242/audios/${trackId}`;
+    let imageUrl = `http://localhost:4242/image/${trackId}`;
+    let audioUrl = `http://localhost:4242/audio/${trackId}`;
     return res.status(200).render('kitty', { audio: audioUrl, image: imageUrl });
 
 });

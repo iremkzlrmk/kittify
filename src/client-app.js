@@ -16,9 +16,9 @@ app.get("/track/:trackId", (req, res) => {
 
     http.get(`${serverUrl}/tracks/${trackId}`, (resp) => {
 
-        if (resp.statusCode == 400){
+        if (resp.statusCode == 404){
             console.log("no such track exists"); 
-            return res.status(400).send("no such track exists");
+            return res.status(404).send("no such track exists");
         }
 
         let data = '';
