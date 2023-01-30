@@ -1,8 +1,8 @@
 {
     "id" : "999",
-    "title" : "kitty's 999th dream",
+    "title" : "miavvv",
     "album" : "kitty's dreams",
-    "artist" : "kitty",
-    "image" : null,
+    "artist" : "clem",
+    "image" : "http://localhost:4242/image/999",
     "audio" : "http://localhost:4242/audio/999"
 }

@@ -20,8 +20,13 @@ app.get("/track/:trackId", (req, res) => {
     http.get(`${serverUrl}/track/${trackId}`, (resp) => {
 
         if (resp.statusCode == 404){
-            console.log("no such track exists"); 
-            return res.status(404).send("no such track exists");
+            console.log(`not found ~~ kittify:track:${trackId}`); 
+            return res.status(404).send(`not found ~~ kittify:track:${trackId}`);
+        }
+
+        if (resp.statusCode == 500){
+            console.log(`internal server error ~~ ${err}`); 
+            return res.status(500).send(`internal server error ~~ ${err}`);
         }
 
         let data = '';
@@ -32,7 +37,7 @@ app.get("/track/:trackId", (req, res) => {
 
         resp.on('end', () => {
             let track = JSON.parse(data);
-            res.status(200).render("kitty", { title: track.title, audio: track.audio, image: track.image});
+            res.status(200).render("kitty", {title: track.title, audio: track.audio, image: track.image});
             console.log(`kittify track ${trackId} loaded succesfully`);
         });
 
