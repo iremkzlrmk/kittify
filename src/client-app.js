@@ -2,12 +2,15 @@ const express = require("express");
 const http = require("http");
 const path = require("path");
 
+const viewsDir = path.join(__dirname, "../views");
+
 const serverUrl = "http://localhost:4242";
 
 const app = express();
 
 app.set("views", path.join(__dirname, "../views"));
 app.set('view engine', 'ejs');
+app.use(express.static(viewsDir));
 
 app.get("/", (req, res) => {
     res.status(200).send("hi kitty >.<");
@@ -44,6 +47,12 @@ app.get("/track/:trackId", (req, res) => {
     }).on("error", (err) => {
         console.log("Error: " + err.message);
     });
+});
+
+
+app.get("/upload_files", (req, res) => {
+
+    res.sendFile(`${viewsDir}/upload.html`);
 });
 
 module.exports = app;

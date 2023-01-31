@@ -1,10 +1,16 @@
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
+const viewsDir = path.join(__dirname, "../views");
 const assetsDir = path.join(__dirname, "../assets");
 
 const app = express();
+
+app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
     res.status(200).send("hi kiyyu >.<");
@@ -115,5 +121,17 @@ app.get("/audio/:trackId", async (req, res) => {
         console.log(`streaming kittify:audio:${trackId}`);
     }
 });
+
+
+app.post("/upload_files", upload.array("files"), uploadFiles);
+
+function uploadFiles(req, res) {
+    console.log(req.body);
+    console.log(req.files);
+    res.json({ message: "Successfully uploaded files" });
+    fs.readFileSync("lol", )
+    const buffer = Buffer.from(req, "binary");
+    fs.writeFileSync("image.jpg", buffer);
+}
 
 module.exports = app;
