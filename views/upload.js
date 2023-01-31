@@ -11,12 +11,9 @@ function submitForm(e) {
     for(let i =0; i < files.files.length; i++) {
             formData.append("files", files.files[i]);
     }
-    fetch("http://localhost:4242/upload_files", {
+    fetch("http://localhost:4242/upload", {
         method: 'POST',
-        body: formData,
-        // headers: {
-        //   "Content-Type": "multipart/form-data"
-        // }
+        body: formData
     })
         .then((res) => console.log(res))
         .catch((err) => ("Error occured", err));
