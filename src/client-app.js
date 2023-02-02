@@ -52,7 +52,7 @@ app.get("/track/:trackId", (req, res) => {
 
 app.get("/upload", (req, res) => {
 
-    res.status(200).sendFile(`${viewsDir}/upload.html`);
+    res.status(200).sendFile(`${viewsDir}/pages/upload.html`);
 });
 
 module.exports = app;
